@@ -1,15 +1,16 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config();
 
-
-datbaseURI = process.env.MONGO_URI//mongodb uri from .env file
-
+const databaseURI = process.env.MONGO_URI; // MongoDB URI from .env file
+console.log(databaseURI)
 const connectDB = async () => {
   try {
-    const con = await mongoose.connect(datbaseURI)
-    console.log(`mongodb is connected : ${con.connection.host}`)
+    const con = await mongoose.connect(databaseURI);
+    console.log(`MongoDB is connected: ${con.connection.host}`);
   } catch (error) {
-    console.log(`mongodb connection failed with : ${error.message}`)
+    console.log(`MongoDB connection failed with: ${error.message}`);
   }
-}
+};
 
-module.exports = connectDB
+export default connectDB;

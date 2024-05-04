@@ -1,17 +1,19 @@
-const express = require('express');
+import express from 'express';
+
+import connectDB from './database/connection.js';
+
+
 const app = express();
-require('dotenv').config()
-const connectDB = require('./database/connection')
 
-//connecting mongodb database
-connectDB()
+// Connecting to MongoDB database
+connectDB();
 
-//app server
-const PORT = process.env.PORT || 8080
+// App server
+const PORT = process.env.PORT || 8080;
 app.get('/', (req, res) => {
-  res.send('welcome crud app')
-})
+  res.send('Welcome to the CRUD app');
+});
 
 app.listen(PORT, () => {
-  console.log(`server is running on http://localhost:${PORT}`)
-}) 
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
