@@ -7,7 +7,7 @@ import { setUserLogout } from "../../redux/authSlice";
 
 const NavLink = ({ label, to, onAction }) => {
   return (
-    <li className="uppercase text-sm p-2">
+    <li className="uppercase   text-sm p-2 ">
       <Link to={to} onClick={onAction}>{label}</Link>
     </li>
   )
@@ -44,8 +44,7 @@ function Header() {
             {isUserLoggedIn && (
               <>
                 <NavLink label={'home'} to='/home' />
-                {/* <NavLink label={'profile'} to='/profile' /> */}
-                <NavLink label={'log out'} to='/' onAction={handleLogout} />
+                <NavLink label={'log out'} to='/' onAction={handleLogout} />  
               </>
             )}
 
