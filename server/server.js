@@ -1,19 +1,31 @@
 import express from 'express';
 
 import connectDB from './database/connection.js';
-
-
+import userRoutes from './routes/user.js';
+import adminRoutes from './routes/admin.js';
+import cors from 'cors'
 const app = express();
+
+//cors
+app.use(cors({
+  origin: `http://localhost:3000`,
+  credentials:true
+}))
+app.use(express.json()); // For parsing application/json
+app.use(express.urlencoded({ extended: false })); // For parsing application/x-www-form-urlencoded
 
 // Connecting to MongoDB database
 connectDB();
 
+//loading user routes
+app.use('/user', userRoutes)
+
+//loading admin routes
+app.use('/admin', adminRoutes)
+
 // App server
 const PORT = process.env.PORT || 8080;
-app.get('/', (req, res) => {
-  res.send('Welcome to the CRUD app');
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
-});
+}); 
