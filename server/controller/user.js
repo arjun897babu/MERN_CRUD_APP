@@ -1,6 +1,7 @@
 import { User } from "../model/userModel.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { singleUser } from "../utils/getSingleUser.js"
 
 
 //creating a new user
@@ -72,6 +73,10 @@ export const login = async (req, res, next) => {
       .json({
         message: "User logged in successfully",
         token,
+        user: {
+          id: existingUser._id,
+          name: existingUser.name
+        }
       });
 
   } catch (error) {
@@ -107,18 +112,42 @@ export const logout = async (req, res) => {
 
 //upload profile pic
 
-export const imageUpload = (req, res, next) => {
+export const imageUpload = async (req, res, next) => {
   try {
-   
-    const image = req.file.filename;  
-     
-    if (image) {
-      res.status(200).json({ message: "File uploaded successfully", filename: image });
+    const PORT = process.env.PORT || 8080
+    const { userId } = req.params
+    const imageUrl = `http://localhost:${PORT}/public/${req.file.filename}`;
+
+    if (imageUrl) {
+      const currentUser = await User.findByIdAndUpdate(
+        userId,
+        { image: imageUrl },
+        { new: true }
+      );
+      res.status(200).json({ message: "File uploaded successfully", filename: imageUrl });
     } else {
-      res.status(400).json({ message: 'Image is not uploaded' });  
+      res.status(400).json({ message: 'Image is not uploaded' });
     }
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ message: `Error in upload image: ${error.message}` });
+  }
+}
+
+
+//get singleUserDetails
+
+export const singleUserDetails = async (req, res, next) => {
+  try {
+    const { userId } = req.params
+    const userDetails = await singleUser(userId)
+    if (!userDetails) return res.status(401).json({ message: 'user not found' })
+
+    res.status(200).json({
+      userDetails
+    })
+
+  } catch (error) {
+    console.log(`error in usersingle detail page : ${error.message}`)
   }
 }

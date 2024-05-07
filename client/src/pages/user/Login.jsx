@@ -42,7 +42,8 @@ function LogIn() {
 
       const result = await axios.post('/user/login', state)
       if (result.status === 200) {
-        dispatch(setUserLogin())
+        const userData = result.data?.user;  
+        dispatch(setUserLogin(userData)); 
         alert('user logged successfully')
         navigate('/home')
       }
