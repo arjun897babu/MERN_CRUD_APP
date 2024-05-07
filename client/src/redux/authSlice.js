@@ -1,32 +1,30 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// initial state for the authentication part
 const initialState = {
   isUserAuth: null,
-  isAdminAuth: null,
-  userDetails:{}
+  userDetails: {}  // bbject to store user details
 };
 
-export const authSlice = createSlice({
-  name: 'auth',
-  initialState, 
-  reducers: {
-    setUserLogin: (state, action) => {
-      state.isUserAuth = true;
-      state.userDetails = action.payload
+export const authSlice = createSlice(
+  {
+    name: 'auth',
+    initialState,
+    reducers: {
+      //   set user login status and details
+      setUserLogin: (state, action) => {
+        state.isUserAuth = true;
+        state.userDetails = action.payload
+      },
+      //reset user state upon logout
+      setUserLogout: (state) => {
+        state.isUserAuth = false;
+        state.userDetails = {}
+      }
     },
-    setUserLogout: (state) => {
-      state.isUserAuth = false;
-      state.userDetails = {}
-    },
-    setAdminLogin: (state, action) => {
-      state.isAdminAuth = true;
-    },
-    setAdminLogout: (state) => {
-      state.isAdminAuth = false;
-    }, 
-  },
-});
+  }
+);
 
-export const { setUserLogin, setUserLogout, setAdminLogin, setAdminLogout } = authSlice.actions;
+export const { setUserLogin, setUserLogout } = authSlice.actions;
 
 export default authSlice.reducer;

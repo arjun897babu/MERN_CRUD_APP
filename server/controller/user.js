@@ -151,3 +151,23 @@ export const singleUserDetails = async (req, res, next) => {
     console.log(`error in usersingle detail page : ${error.message}`)
   }
 }
+
+//update user details
+export const updateUser = async (req, res, next) => {
+  try {
+
+    const { userId } = req.params
+    const { name, email } = req.body
+    
+    const updateUser = await User.findByIdAndUpdate(userId, {
+      name, email
+    }, { new: true })
+
+    if (!updateUser) return res.status(400).json({ message: 'updation failed' })
+    res.status(200).json({ message: 'user details updated' })
+
+  } catch (error) {
+    console.log(`error in updating user : ${error.message}`)
+    //next(error)
+  }
+}

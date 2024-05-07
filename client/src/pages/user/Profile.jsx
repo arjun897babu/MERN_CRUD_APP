@@ -1,33 +1,51 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { useEffect, useReducer, useRef, useState } from "react"
 import axios from '../../services/reactAPIServer.js'
 import { useParams } from "react-router-dom";
+import { validateEmail,validateName } from "../../utils/validationHelper.js";
 
 function Profile() {
-  const [data, setData] = useState({});
+  const [data, setData] = useState({}); //state for user data
   const fileRef = useRef(null);
   const { id } = useParams();
 
+  //function for uploading profile picture
   const handleImageUpload = async (event) => {
+
     event.preventDefault();
     const file = event.target.files[0];
+
     if (file) {
+
       const formData = new FormData();
       formData.append('image', file);
 
       try {
-        const response = await axios.put(`/user/upload/${id}`, formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        });
+        const response = await axios
+          .put(`/user/upload/${id}`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+          );
+
         const responseData = response.data;
 
         if (responseData && responseData.filename) {
-          setData(prevData => ({ ...prevData, image: responseData.filename }));
+          setData((prevData) => (
+            {
+              ...prevData,
+              image: responseData.filename
+            }
+          )
+          );
+
           alert('Upload successful');
-        } else {
-          console.error('File upload unsuccessful:', responseData.message);
+
         }
+        else console.error('File upload unsuccessfull:', responseData.message);
+
       } catch (error) {
         console.error('Upload failed:', error);
         alert('Upload failed: ' + error.message);
@@ -35,28 +53,60 @@ function Profile() {
     }
   };
 
+  //function for getting user details
   const fetchUserDetails = async () => {
+
     try {
       const result = await axios.get(`/user/getSingleUser/${id}`);
+
       const { data } = result;
-      if (data && data.userDetails) {
-        setData(data.userDetails);
-      }
+
+      if (data && data.userDetails) setData(data.userDetails);
+
     } catch (error) {
-      console.log(`Error fetching user details: ${error.message}`);
-      alert(`Error fetching user details: ${error.message}`);
+      console.log(`Error fetching user details: ${error.message}`); 
     }
   };
-  console.log(data)
+
+  //event handler for inputfiled 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setData((prevData) => (
+      {
+        ...prevData,
+        [name]: value
+      }
+    ));
+
+  }
+
+
   useEffect(() => {
     fetchUserDetails();
   }, [id]);
+
+  //function for updating the user details
+  const handleUpdation = async (e) => {
+
+    e.preventDefault();
+
+    const { name, email } = data
+
+    try {
+
+      await axios.put(`/user/updateUser/${id}`, { name, email });
+      alert('Profile updated successfully!')
+    } catch (error) {
+      console.log(`Error while updating the details: ${error.message}`);
+    }
+  }
 
   return (
     <>
       <div className="p-3 max-auto">
         <h1 className="text-3xl font-semibold text-center my-7 uppercase">Profile</h1>
-        <form className="flex flex-col gap-4 items-center">
+        <form className="flex flex-col gap-4 items-center" onSubmit={handleUpdation}>
           <input type="file"
             name="image"
             id="fileInput"
@@ -74,20 +124,22 @@ function Profile() {
           <input
             className='bg-slate-100 rounded-lg p-3 w-1/4 focus:outline-none'
             type='text'
+            name="name"
             id='username'
             value={data?.name || ''}
-            readOnly
+            onChange={handleChange}
           />
           <input
             type='email'
             id='email'
+            name="email"
             value={data?.email || ''}
             className='bg-slate-100 rounded-lg p-3 w-1/4 focus:outline-none'
-            readOnly
+            onChange={handleChange}
           />
           <button
             className="bg-teal-900 p-2 hover:bg-teal-700 hover:border-black font-sem w-1/4"
-            type="button">Update</button>
+            type="submit">Update</button>
         </form>
       </div>
     </>

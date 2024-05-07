@@ -16,8 +16,6 @@ export const singleUser = async (userId) => {
       }
     ]);
 
-    console.log(user);
-
     return user
 
   } catch (error) {

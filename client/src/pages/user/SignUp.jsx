@@ -1,6 +1,8 @@
-import React, { useReducer } from "react"
+import React, { useEffect, useReducer } from "react"
 import { Link, useNavigate } from 'react-router-dom'
 import axios from '../../services/reactAPIServer.js'
+import { useSelector } from "react-redux"
+import * as validation from "../../utils/validationHelper.js"
 
 const initialState = {
   name: '',
@@ -20,29 +22,36 @@ const reducer = (state, action) => {
 function SignUp() {
   const navigate = useNavigate()
   const [state, dispatch] = useReducer(reducer, initialState)
+  const isUserLoggedIn = useSelector((state) => state.user.isUserAuth)
 
   //onChange event listener for input
   const handleChange = (e) => {
     const { name, value } = e.target
     dispatch({ type: 'set_filed', filed: name, value })
-    
+
   }
 
   //for handling the form
-  const handleSubmit =async (e) => {
-   
-    e.preventDefault()
-    console.log(state)
+  const handleSubmit = async (e) => {
+
+    e.preventDefault();
+
     try {
       const response = await axios.post('/user/signUp', state)
-      
-      if(response.status===200) {
+
+      if (response.status === 200) {
         navigate('/')
       }
     } catch (error) {
       console.log(error)
     }
   }
+
+  useEffect(() => {
+    // redirects to home page if user is already logged in
+    if (isUserLoggedIn) navigate('/home')
+
+  }, [isUserLoggedIn])
 
   return (
     <>

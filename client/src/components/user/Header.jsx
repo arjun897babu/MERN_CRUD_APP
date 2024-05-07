@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from 'react-router-dom'
 import { setUserLogout } from "../../redux/authSlice";
 
-
+// navLink component for creating navigation links
 const NavLink = ({ label, to, onAction }) => {
   return (
     <li className="uppercase   text-sm p-2 ">
@@ -14,7 +14,10 @@ const NavLink = ({ label, to, onAction }) => {
 }
 
 function Header() {
+
+  // accessing user login status from Redux store
   const isUserLoggedIn = useSelector((state) => state.user.isUserAuth)
+
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
@@ -23,8 +26,9 @@ function Header() {
 
     try {
 
-      const response = await axios.post('/user/logout');
-      console.log('Logout successful:', response);
+      await axios.post('/user/logout');
+      
+      // dispatching setUserLogout action to update the Redux state
       dispatch(setUserLogout())
       alert('user logged out successfully')
       navigate('/')
@@ -44,7 +48,7 @@ function Header() {
             {isUserLoggedIn && (
               <>
                 <NavLink label={'home'} to='/home' />
-                <NavLink label={'log out'} to='/' onAction={handleLogout} />  
+                <NavLink label={'log out'} to='/' onAction={handleLogout} />
               </>
             )}
 

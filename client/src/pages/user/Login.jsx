@@ -3,15 +3,20 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from '../../services/reactAPIServer.js'
 import { useDispatch, useSelector } from "react-redux";
 import { setUserLogin } from "../../redux/authSlice.js";
+import { validateEmail } from "../../utils/validationHelper.js";
 
+// initial state for the form
 const initialState = {
   email: '',
   password: ''
 }
 
+// reducer function for handling state changes
 const reducer = (state, action) => {
   switch (action.type) {
     case 'set_filed':
+
+      // Updates the specific field with the new value
       return { ...state, [action.filed]: action.value }
     default:
       return state
@@ -19,19 +24,26 @@ const reducer = (state, action) => {
 }
 
 function LogIn() {
+
   const navigate = useNavigate()
   const [state, dispatchLocal] = useReducer(reducer, initialState)
   const dispatch = useDispatch()
 
+  // accessing the user authentication status from the redux store
   const isUserLoggedIn = useSelector((state) => state.user.isUserAuth)
- 
+
   useEffect(() => {
+
+    // redirects to home page if user is already logged in
     if (isUserLoggedIn) navigate('/home')
-  }, [])
+
+  }, [isUserLoggedIn])
 
   const handleChange = (e) => {
 
     const { name, value } = e.target
+
+    // update field values
     dispatchLocal({ type: 'set_filed', filed: name, value })
 
   }
@@ -42,8 +54,11 @@ function LogIn() {
 
       const result = await axios.post('/user/login', state)
       if (result.status === 200) {
-        const userData = result.data?.user;  
-        dispatch(setUserLogin(userData)); 
+
+        const userData = result.data?.user;
+
+        // update global state with user data
+        dispatch(setUserLogin(userData));
         alert('user logged successfully')
         navigate('/home')
       }
