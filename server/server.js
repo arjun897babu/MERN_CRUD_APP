@@ -4,6 +4,8 @@ import connectDB from './database/connection.js';
 import userRoutes from './routes/user.js';
 import adminRoutes from './routes/admin.js';
 import cors from 'cors'
+import path from 'path'
+import { fileURLToPath } from 'url';
 const app = express();
 
 //cors
@@ -16,6 +18,13 @@ app.use(express.urlencoded({ extended: false })); // For parsing application/x-w
 
 // Connecting to MongoDB database
 connectDB();
+
+//loading static folder
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname,'public')))
 
 //loading user routes
 app.use('/user', userRoutes)

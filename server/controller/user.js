@@ -89,10 +89,10 @@ export const login = async (req, res, next) => {
 export const logout = async (req, res) => {
   try {
 
-    res.clearCookie('userJWT',{
-      httpOnly:true,
-      sameSite:'lax',
-      path:'/'
+    res.clearCookie('userJWT', {
+      httpOnly: true,
+      sameSite: 'lax',
+      path: '/'
     })
       .status(200)
       .json({ message: 'user logout' })
@@ -102,5 +102,23 @@ export const logout = async (req, res) => {
     res.status(500).json({
       message: `error in user logout ${error.message}`
     })
+  }
+}
+
+//upload profile pic
+
+export const imageUpload = (req, res, next) => {
+  try {
+   
+    const image = req.file.filename;  
+     
+    if (image) {
+      res.status(200).json({ message: "File uploaded successfully", filename: image });
+    } else {
+      res.status(400).json({ message: 'Image is not uploaded' });  
+    }
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: `Error in upload image: ${error.message}` });
   }
 }
