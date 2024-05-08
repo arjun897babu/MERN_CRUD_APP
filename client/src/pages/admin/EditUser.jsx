@@ -98,6 +98,9 @@ function EditUser() {
       const result = await axios.put(`/admin/updateUser/${id}`, { name, email });
       console.log(result)
     } catch (error) {
+      if (error.response && error.response.status === 409) {
+        updateError('email',error.response.data.message)
+      }
       console.log(`Error while updating the details: ${error.message}`);
     }
   }

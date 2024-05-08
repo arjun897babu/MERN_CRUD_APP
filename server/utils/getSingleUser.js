@@ -108,4 +108,4 @@ export const uploadProfilePic = async (userId, fileName) => {
   } catch (error) {
     throw error
   }
-}
+} 

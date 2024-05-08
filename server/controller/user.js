@@ -12,12 +12,7 @@ export const createUser = async (req, res, next) => {
   try {
 
     const { status, message } = await createNewUser(name, email, password);
-    res.status(200).json({
-      status,
-      message
-    })
-
-    await newUser.save();
+    
     res.status(200).json({
       status,
       message
@@ -25,6 +20,11 @@ export const createUser = async (req, res, next) => {
 
   } catch (error) {
     console.log(`error in creating user : ${error.message}`)
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: 'Email already in use'
+      });
+    }
     res.status(500).json({
       message: `error while creating user :${error.message}`
     })
@@ -177,6 +177,11 @@ export const updateUser = async (req, res, next) => {
 
   } catch (error) {
     console.log(`error in updating user : ${error.message}`)
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: 'Email already in use'
+      });
+    }
     //next(error)
   }
 }

@@ -7,13 +7,16 @@ import * as validation from "../../utils/validationHelper.js"
 const initialState = {
   name: '',
   email: '',
-  password: ''
+  password: '',
+  error: {}
 }
 
 const reducer = (state, action) => {
   switch (action.type) {
     case 'set_filed':
       return { ...state, [action.filed]: action.value }
+    case 'set_error':
+      return { ...state, error: { ...state.error, [action.field]: action.message } }
     default:
       return state
   }
@@ -31,10 +34,40 @@ function AddUser() {
 
   }
 
+  const updateError = (field, message) => {
+    dispatch({ type: 'set_error', field: field, message: message })
+  }
+
   //for handling the form
   const handleSubmit = async (e) => {
 
     e.preventDefault();
+    //clear error message for every submission
+    updateError('name', '')
+    updateError('email', '')
+    updateError('password', '')
+
+    let isError = false
+
+    const nameValidation = validation.validateName(state.name);
+    const emailValidation = validation.validateEmail(state.email);
+    const passwordValidation = validation.validatePassword(state.password);
+
+    if (!nameValidation.isValid) {
+      updateError('name', nameValidation.message);
+      isError = true;
+    }
+    if (!emailValidation.isValid) {
+      updateError('email', emailValidation.message);
+      isError = true;
+    }
+    if (!passwordValidation.isValid) {
+      updateError('password', passwordValidation.message);
+      isError = true;
+    }
+
+    // stop the form submission if there is an error
+    if (isError) return;
 
     try {
       const response = await axios.post('/admin/addUser', state)
@@ -43,7 +76,9 @@ function AddUser() {
         navigate('/admin')
       }
     } catch (error) {
-      console.log(error)
+      if (error.response && error.response.status === 409) {
+        updateError('email', error.response.data.message)
+      }
     }
   }
 
@@ -53,7 +88,7 @@ function AddUser() {
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-10 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className=" uppercase mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-           add new user
+            add new user
           </h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -72,6 +107,7 @@ function AddUser() {
                 value={state.name}
                 onChange={handleChange}
               />
+              {state.error.name && <small className="text-red-600">{state.error.name}</small>}
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
@@ -87,6 +123,7 @@ function AddUser() {
                 value={state.email}
                 onChange={handleChange}
               />
+               {state.error.email && <small className="text-red-600">{state.error.email}</small>}
 
             </div>
             <div>
@@ -103,16 +140,17 @@ function AddUser() {
                 value={state.password}
                 onChange={handleChange}
               />
+               {state.error.password && <small className="text-red-600">{state.error.password}</small>}
 
             </div>
             <button
               type="submit"
               className=" uppercase flex w-full justify-center rounded-md bg-blue-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-blue-500 focus:outline-none"
             >
-              add user  
+              add user
             </button>
           </form>
-        
+
         </div>
 
 

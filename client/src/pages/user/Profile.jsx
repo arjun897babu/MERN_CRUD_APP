@@ -98,6 +98,9 @@ function Profile() {
       await axios.put(`/user/updateUser/${id}`, { name, email });
       alert('Profile updated successfully!')
     } catch (error) {
+      if (error.response && error.response.status === 409) {
+        updateError('email',error.response.data.message)
+      }
       console.log(`Error while updating the details: ${error.message}`);
     }
   }

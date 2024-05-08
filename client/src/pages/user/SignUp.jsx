@@ -7,17 +7,24 @@ import * as validation from "../../utils/validationHelper.js"
 const initialState = {
   name: '',
   email: '',
-  password: ''
+  password: '',
+  error: {}
 }
+
+
 
 const reducer = (state, action) => {
   switch (action.type) {
     case 'set_filed':
       return { ...state, [action.filed]: action.value }
+    case 'set_error':
+      return { ...state, error: { ...state.error, [action.field]: action.message } }
     default:
       return state
   }
 }
+
+
 
 function SignUp() {
   const navigate = useNavigate()
@@ -31,10 +38,41 @@ function SignUp() {
 
   }
 
+  const updateError = (field, message) => {
+    dispatch({ type: 'set_error', field: field, message: message })
+  }
+
   //for handling the form
   const handleSubmit = async (e) => {
 
     e.preventDefault();
+    //clear error message for every submission
+    updateError('name', '')
+    updateError('email', '')
+    updateError('password', '')
+
+    let isError = false
+
+    const nameValidation = validation.validateName(state.name);
+    const emailValidation = validation.validateEmail(state.email);
+    const passwordValidation = validation.validatePassword(state.password);
+
+
+    if (!nameValidation.isValid) {
+      updateError('name', nameValidation.message);
+      isError = true;
+    }
+    if (!emailValidation.isValid) {
+      updateError('email', emailValidation.message);
+      isError = true;
+    }
+    if (!passwordValidation.isValid) {
+      updateError('password', passwordValidation.message);
+      isError = true;
+    }
+
+    // stop the form submission if there is an error
+    if (isError) return;
 
     try {
       const response = await axios.post('/user/signUp', state)
@@ -43,7 +81,9 @@ function SignUp() {
         navigate('/')
       }
     } catch (error) {
-      console.log(error)
+      if (error.response && error.response.status === 409) {
+        updateError('email',error.response.data.message)
+      }
     }
   }
 
@@ -72,11 +112,11 @@ function SignUp() {
                 name="name"
                 type="text"
                 autoComplete="name"
-                required
                 className="p-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none sm:text-sm"
                 value={state.name}
                 onChange={handleChange}
               />
+              {state.error.name && <small className="text-red-600">{state.error.name}</small>}
             </div>
             <div>
               <label htmlFor="email" className="block text-sm font-medium leading-6 text-gray-900">
@@ -85,13 +125,13 @@ function SignUp() {
               <input
                 id="email"
                 name="email"
-                type="email"
+                type="text"
                 autoComplete="email"
-                required
                 className="p-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none sm:text-sm"
                 value={state.email}
                 onChange={handleChange}
               />
+              {state.error.email && <small className="text-red-600">{state.error.email}</small>}
 
             </div>
             <div>
@@ -103,11 +143,11 @@ function SignUp() {
                 name="password"
                 type="password"
                 autoComplete="password"
-                required
                 className="p-4 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:outline-none sm:text-sm"
                 value={state.password}
                 onChange={handleChange}
               />
+              {state.error.password && <small className="text-red-600">{state.error.password}</small>}
 
             </div>
             <button
@@ -124,9 +164,6 @@ function SignUp() {
             </Link>
           </p>
         </div>
-
-
-
       </div>
     </>
   )

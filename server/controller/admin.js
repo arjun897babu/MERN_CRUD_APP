@@ -112,8 +112,13 @@ export const addUser = async (req, res, next) => {
 
   } catch (error) {
     console.error(`error in create user on admin side : ${error.message}`)
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: 'Email already in use'
+      });
+    }
     res.status(500).json({
-      message: `error in create user on admin side ${error.message}`
+      message: `error in create user on admin side ${error.message,error}`
     })
   }
 }
@@ -140,6 +145,11 @@ export const updateUser = async (req, res, next) => {
 
   } catch (error) {
     console.error(`error in update user on admin side : ${error.message}`)
+    if (error.code === 11000) {
+      return res.status(409).json({
+        message: 'Email already in use'
+      });
+    }
     res.status(500).json({
       message: `error in update user on admin side ${error.message}`
     })
