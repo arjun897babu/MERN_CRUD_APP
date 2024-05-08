@@ -32,11 +32,11 @@ function EditUser() {
 
         const responseData = response.data;
 
-        if (responseData && responseData.filename) {
+        if (responseData && responseData.imagePath) {
           setData((prevData) => (
             {
               ...prevData,
-              image: responseData.filename
+              image: responseData.imagePath
             }
           )
           );
@@ -95,8 +95,8 @@ function EditUser() {
 
     try {
 
-      await axios.put(`/admin/updateUser/${id}`, { name, email });
-      alert('Profile updated successfully!')
+      const result = await axios.put(`/admin/updateUser/${id}`, { name, email });
+      console.log(result)
     } catch (error) {
       console.log(`Error while updating the details: ${error.message}`);
     }

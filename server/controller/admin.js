@@ -1,7 +1,7 @@
 import { Admin } from "../model/adminModel.js"
 import jwt from 'jsonwebtoken'
 import { User } from '../model/userModel.js'
-import { allUser, createNewUser } from "../utils/getSingleUser.js"
+import { allUser, createNewUser, singleUser, updateUserDetails, uploadProfilePic } from "../utils/getSingleUser.js"
 const admin = {
   email: process.env.ADMIN_EMAIL,
   password: process.env.ADMIN_PASS
@@ -100,6 +100,7 @@ export const deleteUser = async (req, res, next) => {
   }
 }
 
+//add a user 
 export const addUser = async (req, res, next) => {
   const { name, email, password } = req.body
   try {
@@ -114,5 +115,79 @@ export const addUser = async (req, res, next) => {
     res.status(500).json({
       message: `error in create user on admin side ${error.message}`
     })
+  }
+}
+
+//update user profile
+export const updateUser = async (req, res, next) => {
+  const { userId } = req.params
+  const { name, email } = req.body
+  try {
+    const { status, message } = await updateUserDetails(userId, name, email)
+
+    if (status === 'success') res.status(200).json(
+      {
+        message,
+        status
+      }
+    )
+    else res.status(400).json(
+      {
+        message,
+        status
+      }
+    )
+
+  } catch (error) {
+    console.error(`error in update user on admin side : ${error.message}`)
+    res.status(500).json({
+      message: `error in update user on admin side ${error.message}`
+    })
+  }
+}
+
+export const getSingleUser = async(req,res,next)=>{
+  const { userId } = req.params
+  console.log(userId)
+  try {
+    const userDetails = await singleUser(userId)
+    console.log(userDetails)
+    if (!userDetails) return res.status(401).json({ message: 'user not found' })
+    res.status(200).json({
+      userDetails
+    })
+  } catch (error) {
+    console.error(`error in single user detail on admin side : ${error.message}`)
+    res.status(500).json({
+      message: `error in update user on admin side ${error.message}`
+    })
+  }
+}
+
+//upload profile pic
+export const imageUpload = async (req, res, next) => {
+  try {
+
+    const { userId } = req.params
+    const { filename } = req.file
+    const { status, message, imagePath } = await uploadProfilePic(userId, filename)
+
+    if (!imagePath) return res.status(401).json(
+      {
+        status,
+        message
+      }
+    )
+    else return res.status(200).json(
+      {
+        status,
+        message,
+        imagePath
+      }
+    )
+
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).json({ message: `Error in upload image: ${error.message}` });
   }
 }

@@ -1,7 +1,7 @@
 import { User } from "../model/userModel.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { createNewUser, singleUser } from "../utils/getSingleUser.js"
+import { createNewUser, singleUser, updateUserDetails, uploadProfilePic } from "../utils/getSingleUser.js"
 
 
 //creating a new user
@@ -110,23 +110,27 @@ export const logout = async (req, res) => {
 }
 
 //upload profile pic
-
 export const imageUpload = async (req, res, next) => {
   try {
-    const PORT = process.env.PORT || 8080
-    const { userId } = req.params
-    const imageUrl = `http://localhost:${PORT}/public/${req.file.filename}`;
 
-    if (imageUrl) {
-      const currentUser = await User.findByIdAndUpdate(
-        userId,
-        { image: imageUrl },
-        { new: true }
-      );
-      res.status(200).json({ message: "File uploaded successfully", filename: imageUrl });
-    } else {
-      res.status(400).json({ message: 'Image is not uploaded' });
-    }
+    const { userId } = req.params
+    const { filename } = req.file
+    const { status, message, imagePath } = await uploadProfilePic(userId, filename)
+
+    if (!imagePath) return res.status(401).json(
+      {
+        status,
+        message
+      }
+    )
+    else return res.status(200).json(
+      {
+        status,
+        message,
+        imagePath
+      }
+    )
+
   } catch (error) {
     console.log(error.message);
     res.status(500).json({ message: `Error in upload image: ${error.message}` });
@@ -135,7 +139,6 @@ export const imageUpload = async (req, res, next) => {
 
 
 //get singleUserDetails
-
 export const singleUserDetails = async (req, res, next) => {
   try {
     const { userId } = req.params
@@ -153,17 +156,24 @@ export const singleUserDetails = async (req, res, next) => {
 
 //update user details
 export const updateUser = async (req, res, next) => {
+
+  const { userId } = req.params
+  const { name, email } = req.body
   try {
+    const { status, message } = await updateUserDetails(userId, name, email)
 
-    const { userId } = req.params
-    const { name, email } = req.body
-    
-    const updateUser = await User.findByIdAndUpdate(userId, {
-      name, email
-    }, { new: true })
-
-    if (!updateUser) return res.status(400).json({ message: 'updation failed' })
-    res.status(200).json({ message: 'user details updated' })
+    if (status === 'success') res.status(200).json(
+      {
+        message,
+        status
+      }
+    )
+    else res.status(400).json(
+      {
+        message,
+        status
+      }
+    )
 
   } catch (error) {
     console.log(`error in updating user : ${error.message}`)

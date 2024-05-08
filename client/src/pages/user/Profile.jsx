@@ -32,11 +32,11 @@ function Profile() {
 
         const responseData = response.data;
 
-        if (responseData && responseData.filename) {
+        if (responseData && responseData.imagePath) {
           setData((prevData) => (
             {
               ...prevData,
-              image: responseData.filename
+              image: responseData.imagePath
             }
           )
           );
