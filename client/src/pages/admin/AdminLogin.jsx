@@ -29,14 +29,13 @@ function AdminLogin() {
   const dispatch = useDispatch()
 
   // accessing the user authentication status from the redux store
-  const isUserLoggedIn = useSelector((state) => state.user.isUserAuth)
+  const isAdminLoggedIn = useSelector((state) => state.admin.isAdminAuth);
 
   useEffect(() => {
-
     // redirects to home page if user is already logged in
-    if (isUserLoggedIn) navigate('/home')
+    if (isAdminLoggedIn) navigate('/admin')
 
-  }, [isUserLoggedIn])
+  }, [isAdminLoggedIn])
 
   const handleChange = (e) => {
 

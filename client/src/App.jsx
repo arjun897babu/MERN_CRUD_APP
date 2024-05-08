@@ -11,9 +11,10 @@ import AdminHome from './pages/admin/Home'
 import EditUser from './pages/admin/EditUser'
 import AddUser from './pages/admin/AddUser'
 import AdminHeader from './components/admin/AdminHeader'
+import { PrivateRoute } from './pages/admin/PrivateRoute'
 
 function App() {
-  
+
   const AppHeader = () => {
     const location = useLocation(); // Accessing the current route location
     const isAdminPath = location.pathname.startsWith('/admin'); // Check if it's an admin path
@@ -58,10 +59,29 @@ function App() {
           {/* ___________________________admin side______________________________ */}
 
           <Route path='/adminLogin' element={<AdminLogin />} />
+
           {/* protected routes */}
-          <Route path='/admin' element={<AdminHome />} />
-          <Route path='/adminEditUser/:id' element={<EditUser />} />
-          <Route path='/adminAddUser' element={<AddUser />} />
+          <Route
+            path='/admin'
+            element={
+              <PrivateRoute>
+                <AdminHome />
+              </PrivateRoute>
+            } />
+          <Route
+            path='/adminEditUser/:id'
+            element={
+              <PrivateRoute>
+                <EditUser />
+              </PrivateRoute>
+            } />
+          <Route
+            path='/adminAddUser'
+            element={
+              <PrivateRoute>
+                <AddUser />
+              </PrivateRoute>
+            } />
           {/* protected routes */}
           {/* ___________________________admin side______________________________ */}
         </Routes>

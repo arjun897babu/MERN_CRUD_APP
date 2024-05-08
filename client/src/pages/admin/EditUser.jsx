@@ -80,11 +80,11 @@ function EditUser() {
     ));
 
   }
-
-
+  
   useEffect(() => {
-    fetchUserDetails();
-  }, [id]);
+      fetchUserDetails();
+  }, [ id]); 
+  
 
   //function for updating the user details
   const handleUpdation = async (e) => {

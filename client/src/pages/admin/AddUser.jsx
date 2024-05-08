@@ -47,11 +47,6 @@ function AddUser() {
     }
   }
 
-  useEffect(() => {
-    // redirects to home page if user is already logged in
-    if (isAdminLoggedIn) navigate('/admin')
-
-  }, [isAdminLoggedIn])
 
   return (
     <>
