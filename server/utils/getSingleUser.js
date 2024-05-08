@@ -1,6 +1,6 @@
 import { User } from "../model/userModel.js";
 import mongoose from "mongoose";
-
+import bcrypt from 'bcrypt'
 
 export const singleUser = async (userId) => {
   try {
@@ -38,6 +38,31 @@ export const allUser = async () => {
 
       ]
     )
+  } catch (error) {
+    throw error
+  }
+}
+
+
+export const createNewUser =async (name,email,password) =>{
+
+  try {
+  
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newUser = new User({
+      name,
+      email,
+      password: hashedPassword
+    });
+
+
+    await newUser.save();
+
+    return {
+      status: 'success',
+      message: 'User created successfully'
+    };
   } catch (error) {
     throw error
   }

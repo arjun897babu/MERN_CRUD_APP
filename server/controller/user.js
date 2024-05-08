@@ -1,7 +1,7 @@
 import { User } from "../model/userModel.js"
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
-import { singleUser } from "../utils/getSingleUser.js"
+import { createNewUser, singleUser } from "../utils/getSingleUser.js"
 
 
 //creating a new user
@@ -11,17 +11,16 @@ export const createUser = async (req, res, next) => {
 
   try {
 
-    const hasedPassword = await bcrypt.hash(password, 10)
-
-    const newUser = new User({
-      name: name,
-      email: email,
-      password: hasedPassword
+    const { status, message } = await createNewUser(name, email, password);
+    res.status(200).json({
+      status,
+      message
     })
 
     await newUser.save();
     res.status(200).json({
-      message: 'user created successfully'
+      status,
+      message
     })
 
   } catch (error) {
