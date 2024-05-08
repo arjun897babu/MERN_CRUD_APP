@@ -1,8 +1,9 @@
 import React, { useEffect, useReducer } from "react"
 import { Link, useNavigate } from 'react-router-dom'
 import axios from '../../services/reactAPIServer.js'
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import * as validation from "../../utils/validationHelper.js"
+import { setAdminLogout } from "../../redux/adminSlice.js"
 
 const initialState = {
   name: '',
@@ -26,6 +27,8 @@ function AddUser() {
   const navigate = useNavigate()
   const [state, dispatch] = useReducer(reducer, initialState)
   const isAdminLoggedIn = useSelector((state) => state.user.isAdminAuth)
+  const dispatchG = useDispatch()
+
 
   //onChange event listener for input
   const handleChange = (e) => {
@@ -76,6 +79,10 @@ function AddUser() {
         navigate('/admin')
       }
     } catch (error) {
+      if (error.response && error.response.status === 401) {
+        dispatchG(setAdminLogout())
+        navigate('/adminLogin')
+      }
       if (error.response && error.response.status === 409) {
         updateError('email', error.response.data.message)
       }

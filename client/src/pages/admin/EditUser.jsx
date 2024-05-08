@@ -1,13 +1,16 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import axios from '../../services/reactAPIServer.js'
-import { useParams } from "react-router-dom";
-import { validateEmail,validateName } from "../../utils/validationHelper.js";
+import { useNavigate, useParams } from "react-router-dom";
+import { validateEmail, validateName } from "../../utils/validationHelper.js";
+import { useDispatch } from "react-redux";
+import { setAdminLogout } from "../../redux/adminSlice.js";
 
 function EditUser() {
   const [data, setData] = useState({}); //state for user data
   const fileRef = useRef(null);
   const { id } = useParams();
-
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   //function for uploading profile picture
   const handleImageUpload = async (event) => {
 
@@ -48,6 +51,10 @@ function EditUser() {
 
       } catch (error) {
         console.error('Upload failed:', error);
+        if (error.response && error.response.status === 401) {
+          dispatch(setAdminLogout())
+          navigate('/adminLogin')
+        }
         alert('Upload failed: ' + error.message);
       }
     }
@@ -64,7 +71,11 @@ function EditUser() {
       if (data && data.userDetails) setData(data.userDetails);
 
     } catch (error) {
-      console.log(`Error fetching user details: ${error.message}`); 
+      console.log(`Error fetching user details: ${error.message}`);
+      if (error.response && error.response.status === 401) {
+        dispatch(setAdminLogout())
+        navigate('/adminLogin')
+      }
     }
   };
 
@@ -80,11 +91,11 @@ function EditUser() {
     ));
 
   }
-  
+
   useEffect(() => {
-      fetchUserDetails();
-  }, [ id]); 
-  
+    fetchUserDetails();
+  }, [id]);
+
 
   //function for updating the user details
   const handleUpdation = async (e) => {
@@ -99,7 +110,7 @@ function EditUser() {
       console.log(result)
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        updateError('email',error.response.data.message)
+        updateError('email', error.response.data.message)
       }
       console.log(`Error while updating the details: ${error.message}`);
     }

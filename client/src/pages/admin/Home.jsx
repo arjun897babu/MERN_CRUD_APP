@@ -1,23 +1,30 @@
 import React, { useEffect, useState } from "react"
 import { FaPencil } from "react-icons/fa6";
 import { MdDelete } from "react-icons/md";
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { GiFastBackwardButton } from "react-icons/gi";
 import axios from "../../services/reactAPIServer";
+import { useDispatch } from "react-redux";
+import { setAdminLogout } from "../../redux/adminSlice";
 
 
 
 const AdminHome = () => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState('')
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const fetchUsers = async () => {
     try {
       const result = await axios.get('/admin/allUser');
-      console.log(result)
       const { data } = result;
       if (data && data.users) setUsers(data.users);
     } catch (error) {
       console.log(`error in fetching user details :${error.message}`)
+      if (error.response && error.response.status === 401) {
+        dispatch(setAdminLogout())
+        navigate('/adminLogin')
+      }
     }
   }
   useEffect(() => {
@@ -48,11 +55,15 @@ const AdminHome = () => {
       }
     } catch (error) {
       console.log(`error in handling user deletion: ${error.message}`);
+      if (error.response && error.response.status === 401) {
+        dispatch(setAdminLogout())
+        navigate('/adminLogin')
+      }
       alert(`Error in deleting user: ${error.message}`);
     }
   }
 
-  
+
   // filter based on search input
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -66,7 +77,7 @@ const AdminHome = () => {
       <main id="" className="p-4">
         <div className="  bg-gray-100 py-4">
           <div className=" p-2 mx-auto flex justify-between">
-            <input className="w-1/4 placeholder:p-2 focus:outline-none" type="text" name="search" id="" placeholder="search"  onChange={handleSearchChange}/>
+            <input className="w-1/4 placeholder:p-2 focus:outline-none" type="text" name="search" id="" placeholder="search" onChange={handleSearchChange} />
             <Link to="/adminAddUser" className="mr-2">
               <button
                 type="submit"
@@ -89,7 +100,7 @@ const AdminHome = () => {
               </tr>
             </thead>
             <tbody>
-            {filteredUsers.map((user, index) => (
+              {filteredUsers.map((user, index) => (
                 <tr key={user._id} className="bg-white border-b">
                   <td className="text-center p-3">{index + 1}</td>
                   <td className="text-center p-3">{user.name}</td>

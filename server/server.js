@@ -6,6 +6,7 @@ import adminRoutes from './routes/admin.js';
 import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url';
+import cookieParser from 'cookie-parser'
 const app = express();
 
 //cors
@@ -15,6 +16,7 @@ app.use(cors({
 }))
 app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: false })); // For parsing application/x-www-form-urlencoded
+app.use(cookieParser())
 
 // Connecting to MongoDB database
 connectDB();

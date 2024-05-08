@@ -1,13 +1,16 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import axios from '../../services/reactAPIServer.js'
-import { useParams } from "react-router-dom";
-import { validateEmail,validateName } from "../../utils/validationHelper.js";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { validateEmail, validateName } from "../../utils/validationHelper.js";
+import { useDispatch } from "react-redux";
+import { setUserLogout } from "../../redux/authSlice.js";
 
 function Profile() {
   const [data, setData] = useState({}); //state for user data
   const fileRef = useRef(null);
   const { id } = useParams();
-
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
   //function for uploading profile picture
   const handleImageUpload = async (event) => {
 
@@ -49,6 +52,10 @@ function Profile() {
       } catch (error) {
         console.error('Upload failed:', error);
         alert('Upload failed: ' + error.message);
+        if (error.response && error.response.status === 401) {
+          dispatch(setUserLogout())
+          navigate('/')
+        }
       }
     }
   };
@@ -64,7 +71,11 @@ function Profile() {
       if (data && data.userDetails) setData(data.userDetails);
 
     } catch (error) {
-      console.log(`Error fetching user details: ${error.message}`); 
+      console.log(`Error fetching user details: ${error.message}`);
+      if (error.response && error.response.status === 401) {
+        dispatch(setUserLogout())
+        navigate('/')
+      }
     }
   };
 
@@ -98,8 +109,13 @@ function Profile() {
       await axios.put(`/user/updateUser/${id}`, { name, email });
       alert('Profile updated successfully!')
     } catch (error) {
+      console.log(error)
       if (error.response && error.response.status === 409) {
-        updateError('email',error.response.data.message)
+        updateError('email', error.response.data.message)
+      }
+      if (error.response && error.response.status === 401) {
+        dispatch(setUserLogout())
+        navigate('/')
       }
       console.log(`Error while updating the details: ${error.message}`);
     }
