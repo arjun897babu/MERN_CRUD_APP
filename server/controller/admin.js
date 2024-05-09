@@ -74,7 +74,6 @@ export const adminLogout = async (req, res, next) => {
 export const allUserDetails = async (req, res, next) => {
   try {
     const list = await allUser();
-    console.log(list)
     if (list.length < 1) {
       return res.status(404).json({ message: 'no user found in database' })
     }

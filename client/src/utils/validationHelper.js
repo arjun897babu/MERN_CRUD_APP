@@ -17,8 +17,12 @@ const validateEmail = (email) => {
 }
 
 //image extension check
-const validateImage = (name) => {
-
+const validateImage = (image) => {
+  const regex = /\.(jpe?g|png|gif)$/i;
+  if (!regex.test(image)) {
+    return { invalid: false, message: 'Invalid image format' };
+  }
+  return { invalid: true };
 }
 
 //password extension check

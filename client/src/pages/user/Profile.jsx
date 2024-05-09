@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import axios from '../../services/reactAPIServer.js'
 import { Navigate, useNavigate, useParams } from "react-router-dom";
-import { validateEmail, validateName } from "../../utils/validationHelper.js";
+import { validateEmail, validateImage, validateName } from "../../utils/validationHelper.js";
 import { useDispatch } from "react-redux";
 import { setUserLogout } from "../../redux/authSlice.js";
 
@@ -16,7 +16,14 @@ function Profile() {
   const handleImageUpload = async (event) => {
 
     event.preventDefault();
+    setError({ ...error, validateImage: '' })
     const file = event.target.files[0];
+    const imageValidation =  (file.name)
+    if (!imageValidation.invalid) {
+      setError((prevErrors) => ({ ...prevErrors, image: imageValidation.message }));
+      alert(error.image)
+      return
+    }
 
     if (file) {
 
@@ -103,7 +110,6 @@ function Profile() {
 
     e.preventDefault();
     setError({})
-    const { name, email } = data
 
     try {
 

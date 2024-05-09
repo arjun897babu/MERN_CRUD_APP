@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import axios from '../../services/reactAPIServer.js'
 import { useNavigate, useParams } from "react-router-dom";
-import { validateEmail, validateName } from "../../utils/validationHelper.js";
+import { validateEmail, validateImage, validateName } from "../../utils/validationHelper.js";
 import { useDispatch } from "react-redux";
 import { setAdminLogout } from "../../redux/adminSlice.js";
 
@@ -16,7 +16,15 @@ function EditUser() {
   const handleImageUpload = async (event) => {
 
     event.preventDefault();
+
+    setError({ ...error, image: '' })
     const file = event.target.files[0];
+    const imageValidation = validateImage(file.name)
+    if (!imageValidation.invalid) {
+      setError((prevErrors) => ({ ...prevErrors, image: imageValidation.message }));
+      alert(error.image)
+      return
+    }
 
     if (file) {
 
