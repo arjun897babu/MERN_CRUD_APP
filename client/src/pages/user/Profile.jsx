@@ -7,6 +7,7 @@ import { setUserLogout } from "../../redux/authSlice.js";
 
 function Profile() {
   const [data, setData] = useState({}); //state for user data
+  const [error, setError] = useState({}); //state for error
   const fileRef = useRef(null);
   const { id } = useParams();
   const navigate = useNavigate()
@@ -101,7 +102,7 @@ function Profile() {
   const handleUpdation = async (e) => {
 
     e.preventDefault();
-
+    setError({})
     const { name, email } = data
 
     try {
@@ -111,7 +112,7 @@ function Profile() {
     } catch (error) {
       console.log(error)
       if (error.response && error.response.status === 409) {
-        updateError('email', error.response.data.message)
+        setError({ ...error, email: error.response.data.message })
       }
       if (error.response && error.response.status === 401) {
         dispatch(setUserLogout())
@@ -156,6 +157,7 @@ function Profile() {
             className='bg-slate-100 rounded-lg p-3 w-1/4 focus:outline-none'
             onChange={handleChange}
           />
+          {error.email && <small className="text-red-600">{error.email}</small>}
           <button
             className="bg-teal-900 p-2 hover:bg-teal-700 hover:border-black font-sem w-1/4"
             type="submit">Update</button>

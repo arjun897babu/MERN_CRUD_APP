@@ -58,6 +58,8 @@ function AdminLogin() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    updateError('email','')
+    updateError('password','')
     try {
 
       const result = await axios.post('/admin/login', state)

@@ -73,13 +73,14 @@ export const createNewUser = async (name, email, password) => {
 //update user
 export const updateUserDetails = async (userId, name, email) => {
   try {
-
+    const existingEmail = await User.exists({email});
+    if (existingEmail) return { status : 'error', message: 'email exists' }
     const updateUser = await User.findByIdAndUpdate(userId,
       { name, email },
       { new: true }
     )
 
-    if (!updateUser) return { status: 'success', message: 'updation failed' }
+    if (!updateUser) return { status: 'failed', message: 'updation failed' }
     else return { status: 'success', message: 'user details updated' }
 
   } catch (error) {
@@ -92,7 +93,7 @@ export const updateUserDetails = async (userId, name, email) => {
 export const uploadProfilePic = async (userId, fileName) => {
   try {
     const PORT = process.env.PORT || 8080
-    
+
     const imageUrl = `http://localhost:${PORT}/public/${fileName}`;
 
     if (imageUrl) {

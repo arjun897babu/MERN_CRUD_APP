@@ -130,6 +130,8 @@ export const updateUser = async (req, res, next) => {
   try {
     const { status, message } = await updateUserDetails(userId, name, email)
 
+    if(status==='error') return res.status(409).json({message})
+
     if (status === 'success') res.status(200).json(
       {
         message,

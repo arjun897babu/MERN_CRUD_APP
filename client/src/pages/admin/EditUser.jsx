@@ -7,6 +7,7 @@ import { setAdminLogout } from "../../redux/adminSlice.js";
 
 function EditUser() {
   const [data, setData] = useState({}); //state for user data
+  const [error, setError] = useState({}); //state for error
   const fileRef = useRef(null);
   const { id } = useParams();
   const dispatch = useDispatch()
@@ -55,6 +56,7 @@ function EditUser() {
           dispatch(setAdminLogout())
           navigate('/adminLogin')
         }
+
         alert('Upload failed: ' + error.message);
       }
     }
@@ -101,18 +103,18 @@ function EditUser() {
   const handleUpdation = async (e) => {
 
     e.preventDefault();
-
+    setError({})
     const { name, email } = data
 
     try {
 
       const result = await axios.put(`/admin/updateUser/${id}`, { name, email });
-      if (result.data&& result.status === 200) {
+      if (result.data && result.status === 200) {
         alert('Profile updated')
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        updateError('email', error.response.data.message)
+        setError({ ...error, email: error.response.data.message })
       }
       console.log(`Error while updating the details: ${error.message}`);
     }
@@ -153,6 +155,7 @@ function EditUser() {
             className='bg-slate-100 rounded-lg p-3 w-1/4 focus:outline-none'
             onChange={handleChange}
           />
+           {error.email && <small className="text-red-600">{error.email}</small>}
           <button
             className="bg-blue-500 p-2 hover:bg-blue-700 hover:border-black font-sem w-1/4"
             type="submit">Update</button>
