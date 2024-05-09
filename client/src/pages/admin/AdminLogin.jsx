@@ -1,13 +1,14 @@
 import React, { useEffect, useReducer } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { setAdminLogin } from "../../redux/adminSlice";
 import axios from "../../services/reactAPIServer";
 
 // initial state for the form
 const initialState = {
   email: '',
-  password: ''
+  password: '',
+  error:{}
 }
 
 // reducer function for handling state changes
@@ -17,6 +18,9 @@ const reducer = (state, action) => {
 
       // Updates the specific field with the new value
       return { ...state, [action.filed]: action.value }
+    case 'set_error':
+      return { ...state, error: { ...state.error, [action.field]: action.message } }
+
     default:
       return state
   }
@@ -46,6 +50,12 @@ function AdminLogin() {
 
   }
 
+  const updateError = (field, message) => {
+    console.log('called')
+    dispatchLocal({ type: 'set_error', field: field, message: message })
+  }
+
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -63,6 +73,12 @@ function AdminLogin() {
 
     } catch (error) {
       console.error(error)
+      if (error.response && error.response.status === 404) {
+        updateError('email', error.response.data.message)
+      }
+      if (error.response && error.response.status === 401) {
+        updateError('password', error.response.data.message)
+      }
     }
   }
 
@@ -71,7 +87,7 @@ function AdminLogin() {
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-10 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-gray-900">
-           Admin Log In
+            Admin Log In
           </h2>
         </div>
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
@@ -90,6 +106,7 @@ function AdminLogin() {
                 value={state.email}
                 onChange={handleChange}
               />
+              {state.error.email && <small className="text-red-600">{state.error.email}</small>}
 
             </div>
             <div>
@@ -106,7 +123,7 @@ function AdminLogin() {
                 value={state.password}
                 onChange={handleChange}
               />
-
+              {state.error.password && <small className="text-red-600">{state.error.password}</small>}
             </div>
             <button
               type="submit"

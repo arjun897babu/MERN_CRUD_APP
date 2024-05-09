@@ -107,7 +107,9 @@ function EditUser() {
     try {
 
       const result = await axios.put(`/admin/updateUser/${id}`, { name, email });
-      console.log(result)
+      if (result.data&& result.status === 200) {
+        alert('Profile updated')
+      }
     } catch (error) {
       if (error.response && error.response.status === 409) {
         updateError('email', error.response.data.message)

@@ -8,7 +8,8 @@ import { validateEmail } from "../../utils/validationHelper.js";
 // initial state for the form
 const initialState = {
   email: '',
-  password: ''
+  password: '',
+  error: {}
 }
 
 // reducer function for handling state changes
@@ -18,6 +19,8 @@ const reducer = (state, action) => {
 
       // Updates the specific field with the new value
       return { ...state, [action.filed]: action.value }
+    case 'set_error':
+      return { ...state, error: { ...state.error, [action.field]: action.message } }
     default:
       return state
   }
@@ -48,8 +51,16 @@ function LogIn() {
 
   }
 
+  const updateError = (field, message) => {
+    console.log('called')
+    dispatchLocal({ type: 'set_error', field: field, message: message })
+  }
+
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    //clear error message for every submission
+    updateError('email', '')
+    updateError('password', '')
     try {
 
       const result = await axios.post('/user/login', state)
@@ -65,7 +76,14 @@ function LogIn() {
 
     } catch (error) {
       console.error(error)
+      if (error.response && error.response.status === 404) {
+        updateError('email', error.response.data.message)
+      }
+      if (error.response && error.response.status === 401) {
+        updateError('password', error.response.data.message)
+      }
     }
+    console.log(state)
   }
 
   return (
@@ -92,7 +110,7 @@ function LogIn() {
                 value={state.email}
                 onChange={handleChange}
               />
-
+              {state.error.email && <small className="text-red-600">{state.error.email}</small>}
             </div>
             <div>
               <label htmlFor="password" className="block text-sm font-medium leading-6 text-gray-900">
@@ -108,7 +126,7 @@ function LogIn() {
                 value={state.password}
                 onChange={handleChange}
               />
-
+              {state.error.password && <small className="text-red-600">{state.error.password}</small>}
             </div>
             <button
               type="submit"

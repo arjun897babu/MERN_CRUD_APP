@@ -12,8 +12,8 @@ export const adminLogin = async (req, res, next) => {
 
   try {
     const isAdmin = email === admin.email
-    if (!isAdmin) return res.status(401).json({
-      message: 'Invalid credential'
+    if (!isAdmin) return res.status(404).json({
+      message: 'Invalid email'
     })
     const isValidPassword = admin.password === password
 
