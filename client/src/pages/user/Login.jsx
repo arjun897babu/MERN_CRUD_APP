@@ -70,7 +70,6 @@ function LogIn() {
 
         // update global state with user data
         dispatch(setUserLogin(userData));
-        alert('user logged successfully')
         navigate('/home')
       }
 

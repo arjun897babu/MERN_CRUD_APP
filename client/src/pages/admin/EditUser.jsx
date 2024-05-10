@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { validateEmail, validateImage, validateName } from "../../utils/validationHelper.js";
 import { useDispatch } from "react-redux";
 import { setAdminLogout } from "../../redux/adminSlice.js";
+import { toastMessage } from "../../utils/sweetalert.js";
 
 function EditUser() {
   const [data, setData] = useState({}); //state for user data
@@ -22,7 +23,7 @@ function EditUser() {
     const imageValidation = validateImage(file.name)
     if (!imageValidation.invalid) {
       setError((prevErrors) => ({ ...prevErrors, image: imageValidation.message }));
-      alert(error.image)
+      toastMessage('error','invalid file  format')
       return
     }
 
@@ -53,19 +54,18 @@ function EditUser() {
           )
           );
 
-          alert('Upload successful');
+          toastMessage('success','profile pic updated')
 
         }
         else console.error('File upload unsuccessfull:', responseData.message);
 
       } catch (error) {
-        console.error('Upload failed:', error);
         if (error.response && error.response.status === 401) {
           dispatch(setAdminLogout())
           navigate('/adminLogin')
         }
 
-        alert('Upload failed: ' + error.message);
+        toastMessage('error',error.message)
       }
     }
   };
@@ -130,7 +130,7 @@ function EditUser() {
 
       const result = await axios.put(`/admin/updateUser/${id}`, { name, email });
       if (result.data && result.status === 200) {
-        alert('Profile updated')
+        toastMessage('success','profile updated')
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {

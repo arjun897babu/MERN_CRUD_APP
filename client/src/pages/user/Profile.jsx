@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { validateEmail, validateImage, validateName } from "../../utils/validationHelper.js";
 import { useDispatch } from "react-redux";
 import { setUserLogout } from "../../redux/authSlice.js";
+import { toastMessage } from "../../utils/sweetalert.js";
 
 function Profile() {
   const [data, setData] = useState({}); //state for user data
@@ -21,7 +22,7 @@ function Profile() {
     const imageValidation = validateImage(file.name)
     if (!imageValidation.invalid) {
       setError((prevErrors) => ({ ...prevErrors, image: imageValidation.message }));
-      alert(error.image)
+      toastMessage('error',error.image)
       return
     }
 
@@ -51,15 +52,14 @@ function Profile() {
             }
           )
           );
-
-          alert('Upload successful');
-
+          toastMessage('success','profile pic updated')
+          
         }
-        else console.error('File upload unsuccessfull:', responseData.message);
-
+        else  toastMessage('error','updation failed'); console.error('File upload unsuccessfull:', responseData.message);
+        
       } catch (error) {
         console.error('Upload failed:', error);
-        alert('Upload failed: ' + error.message);
+        toastMessage('error','updation failed')
         if (error.response && error.response.status === 401) {
           dispatch(setUserLogout())
           navigate('/')
@@ -129,7 +129,7 @@ function Profile() {
     try {
 
       await axios.put(`/user/updateUser/${id}`, { name, email });
-      alert('Profile updated successfully!')
+      toastMessage('success','profile updated')
     } catch (error) {
       if (error.response && error.response.status === 409) {
         setError((prevData) => ({ ...prevData, email: error.response.data.message }))

@@ -69,7 +69,6 @@ function AdminLogin() {
 
         // update global state with user data
         dispatch(setAdminLogin(adminData));
-        alert('admin logged successfully')
         navigate('/admin')
       }
 

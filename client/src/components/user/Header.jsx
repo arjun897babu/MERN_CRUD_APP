@@ -30,7 +30,6 @@ function Header() {
       
       // dispatching setUserLogout action to update the Redux state
       dispatch(setUserLogout())
-      alert('user logged out successfully')
       navigate('/')
 
     } catch (error) {

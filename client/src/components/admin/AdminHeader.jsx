@@ -22,7 +22,6 @@ function AdminHeader() {
 
       // dispatching setAdminLogout action to update the Redux state
       dispatch(setAdminLogout())
-      alert('adimin logged out successfully')
       navigate('/adminLogin')
 
     } catch (error) {

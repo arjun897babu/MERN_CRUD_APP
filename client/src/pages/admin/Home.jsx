@@ -6,6 +6,7 @@ import { GiFastBackwardButton } from "react-icons/gi";
 import axios from "../../services/reactAPIServer";
 import { useDispatch } from "react-redux";
 import { setAdminLogout } from "../../redux/adminSlice";
+import { toastMessage } from "../../utils/sweetalert";
 
 
 
@@ -38,6 +39,7 @@ const AdminHome = () => {
 
   const handleDelete = async (e, userId) => {
     e.preventDefault();
+    
     if (!confirm('Delete user?')) {
       return;
     }
@@ -46,20 +48,18 @@ const AdminHome = () => {
       const result = await axios.delete(`/admin/delete/${userId}`);
       if (result.status === 200) {
         setTimeout(() => {
-
-          alert('User deleted successfully');
+          toastMessage('success','removed user successfully')
         }, 200);
         fetchUsers();
       } else {
-        alert('Failed to delete the user');
+        toastMessage('error','Failed to delete the user')
       }
     } catch (error) {
-      console.log(`error in handling user deletion: ${error.message}`);
       if (error.response && error.response.status === 401) {
         dispatch(setAdminLogout())
         navigate('/adminLogin')
       }
-      alert(`Error in deleting user: ${error.message}`);
+      toastMessage('error',error.message)
     }
   }
 

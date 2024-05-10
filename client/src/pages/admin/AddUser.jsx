@@ -4,6 +4,7 @@ import axios from '../../services/reactAPIServer.js'
 import { useDispatch, useSelector } from "react-redux"
 import * as validation from "../../utils/validationHelper.js"
 import { setAdminLogout } from "../../redux/adminSlice.js"
+import { toastMessage } from "../../utils/sweetalert.js"
 
 const initialState = {
   name: '',
@@ -75,7 +76,7 @@ function AddUser() {
     try {
       const response = await axios.post('/admin/addUser', state)
       if (response.status === 200) {
-        alert('user added')
+        toastMessage('success','added a new user')
         navigate('/admin')
       }
     } catch (error) {
