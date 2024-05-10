@@ -8,10 +8,10 @@ import path from 'path'
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser'
 const app = express();
-
+const origin = process.env.ORIGIN
 //cors
 app.use(cors({
-  origin: `http://localhost:3000`,
+  origin: origin,
   credentials:true
 }))
 app.use(express.json()); // For parsing application/json
