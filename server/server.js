@@ -8,12 +8,15 @@ import path from 'path'
 import { fileURLToPath } from 'url';
 import cookieParser from 'cookie-parser'
 const app = express();
+
 const origin = process.env.ORIGIN
+
 //cors
 app.use(cors({
   origin: origin,
   credentials:true
 }))
+
 app.use(express.json()); // For parsing application/json
 app.use(express.urlencoded({ extended: false })); // For parsing application/x-www-form-urlencoded
 app.use(cookieParser())
