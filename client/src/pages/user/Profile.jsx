@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useRef, useState } from "react"
 import axios from '../../services/reactAPIServer.js'
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { validateEmail, validateImage, validateName } from "../../utils/validationHelper.js";
 import { useDispatch } from "react-redux";
 import { setUserLogout } from "../../redux/authSlice.js";
@@ -18,7 +18,7 @@ function Profile() {
     event.preventDefault();
     setError({ ...error, validateImage: '' })
     const file = event.target.files[0];
-    const imageValidation =  (file.name)
+    const imageValidation = validateImage(file.name)
     if (!imageValidation.invalid) {
       setError((prevErrors) => ({ ...prevErrors, image: imageValidation.message }));
       alert(error.image)
@@ -110,21 +110,34 @@ function Profile() {
 
     e.preventDefault();
     setError({})
+    const { name, email } = data
+
+    const nameValid = validateName(name)
+    const emailValid = validateEmail(email)
+
+    if (!nameValid.isValid) {
+      setError((prevData) => ({ ...prevData, name: nameValid.message }))
+      return
+    }
+    if (!emailValid.isValid) {
+      setError((prevData) => ({ ...prevData, email: nameValid.message }))
+      return
+    }
+
+
 
     try {
 
       await axios.put(`/user/updateUser/${id}`, { name, email });
       alert('Profile updated successfully!')
     } catch (error) {
-      console.log(error)
       if (error.response && error.response.status === 409) {
-        setError({ ...error, email: error.response.data.message })
+        setError((prevData) => ({ ...prevData, email: error.response.data.message }))
       }
       if (error.response && error.response.status === 401) {
         dispatch(setUserLogout())
         navigate('/')
       }
-      console.log(`Error while updating the details: ${error.message}`);
     }
   }
 
@@ -148,13 +161,14 @@ function Profile() {
           />
 
           <input
-            className='bg-slate-100 rounded-lg p-3 w-1/4 focus:outline-none'
+            className={ `bg-slate-100 rounded-lg p-3 w-1/4 focus:outline-none ${error.name ? 'border border-orange-800' : ''}`}
             type='text'
             name="name"
             id='username'
             value={data?.name || ''}
             onChange={handleChange}
           />
+          {error.name && <small className="  text-red-600  ">{error.name}</small>}
           <input
             type='email'
             id='email'

@@ -114,6 +114,18 @@ function EditUser() {
     setError({})
     const { name, email } = data
 
+    const nameValid = validateName(name)
+    const emailValid = validateEmail(email)
+
+    if (!nameValid.isValid) {
+      setError((prevData)=>({ ...prevData, name: nameValid.message }))
+      return
+    }
+    if (!emailValid.isValid) {
+      setError((prevData)=>({ ...prevData, email: nameValid.message }))
+      return
+    }
+
     try {
 
       const result = await axios.put(`/admin/updateUser/${id}`, { name, email });
@@ -122,11 +134,12 @@ function EditUser() {
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        setError({ ...error, email: error.response.data.message })
+        setError((prevData)=>({ ...prevData, email: error.response.data.message }))
       }
       console.log(`Error while updating the details: ${error.message}`);
     }
   }
+  console.log(error)
 
   return (
     <>
@@ -155,6 +168,7 @@ function EditUser() {
             value={data?.name || ''}
             onChange={handleChange}
           />
+           {error.name && <small className="text-red-600">{error.name}</small>}
           <input
             type='email'
             id='email'
@@ -163,7 +177,7 @@ function EditUser() {
             className='bg-slate-100 rounded-lg p-3 w-1/4 focus:outline-none'
             onChange={handleChange}
           />
-           {error.email && <small className="text-red-600">{error.email}</small>}
+          {error.email && <small className="text-red-600">{error.email}</small>}
           <button
             className="bg-blue-500 p-2 hover:bg-blue-700 hover:border-black font-sem w-1/4"
             type="submit">Update</button>
