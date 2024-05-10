@@ -7,14 +7,7 @@
         }
     ],
     "routes": [
-        {
-            "src": "/user/(.*)",
-            "dest": "/user/$1"
-        },
-        {
-            "src": "/admin/(.*)",
-            "dest": "/admin/$1"
-        },
+        
         {
             "src": "/(.*)",
             "dest": "/server.js" 
