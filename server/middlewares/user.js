@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken'
 
 
 export const verifyUsrToken = async (req, res, next) => {
-
+  const { userId } = req.params
   const { userJWT } = req.cookies;
   if (!userJWT) {
     return res.status(401).json({ error: "Access denied, no token provided" });
@@ -12,6 +12,7 @@ export const verifyUsrToken = async (req, res, next) => {
 
     // Verify the token with the secret key
     const decoded = jwt.verify(userJWT, process.env.JWT_SECRET);
+    if(userId!==decoded.userId) return res.status(401).json({ error: "Access denied" });
     next()
     
   } catch (error) {

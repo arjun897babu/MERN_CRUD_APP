@@ -73,8 +73,8 @@ export const createNewUser = async (name, email, password) => {
 //update user
 export const updateUserDetails = async (userId, name, email) => {
   try {
-    const existingEmail = await User.exists({email});
-    if (existingEmail) return { status : 'error', message: 'email exists' }
+    const existingEmail = await User.exists({ email });
+    if (existingEmail) return { status: 'error', message: 'email exists' }
     const updateUser = await User.findByIdAndUpdate(userId,
       { name, email },
       { new: true }
@@ -92,9 +92,11 @@ export const updateUserDetails = async (userId, name, email) => {
 //upload profile picture
 export const uploadProfilePic = async (userId, fileName) => {
   try {
-    const PORT = process.env.PORT || 8080
+    const SERVER_URL = process.env.SERVER_URL
 
-    const imageUrl = `http://localhost:${PORT}/public/${fileName}`;
+    console.log(SERVER_URL)
+
+    const imageUrl = `${SERVER_URL}/public/${fileName}`;
 
     if (imageUrl) {
       const currentUser = await User.findByIdAndUpdate(
