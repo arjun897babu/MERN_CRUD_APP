@@ -12,7 +12,7 @@ userRoutes.post('/logout', logout)// for user logout
 
 userRoutes.put('/upload/:userId',verifyUsrToken,upload.single('image'),imageUpload)// for uploading the image
 
-userRoutes.get('/getSingleUser/:userId',singleUserDetails) // for get a single user details
+userRoutes.get('/getSingleUser/:userId',verifyUsrToken,singleUserDetails) // for get a single user details
 userRoutes.put('/updateUser/:userId',verifyUsrToken,updateUser) //for updating user details
 
 export default userRoutes

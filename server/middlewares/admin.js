@@ -1,6 +1,9 @@
 import jwt from 'jsonwebtoken'
 
-
+const admin = {
+  email: process.env.ADMIN_EMAIL,
+  password: process.env.ADMIN_PASS
+}
 
 export const verifyAdminToken = async (req, res, next) => {
 
@@ -12,6 +15,8 @@ export const verifyAdminToken = async (req, res, next) => {
 
     // Verify the token with the secret key
     const decoded = jwt.verify(adminJWT, process.env.JWT_SECRET);
+    if (admin.email !== decoded.adminId) return res.status(401).json({ error: "Access denied" });
+    
     next()
     
   } catch (error) {

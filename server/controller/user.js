@@ -143,8 +143,7 @@ export const singleUserDetails = async (req, res, next) => {
   try {
     const { userId } = req.params
     const userDetails = await singleUser(userId)
-    if (!userDetails) return res.status(401).json({ message: 'user not found' })
-
+    
     res.status(200).json({
       userDetails
     })
